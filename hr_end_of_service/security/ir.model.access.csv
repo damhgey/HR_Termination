@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hr_termination_manager,access.hr.termination.manager,model_hr_termination,hr_end_of_service.termination_manager_group,1,1,1,1
+access_hr_termination_employee,access.hr.termination.employee,model_hr_termination,hr_end_of_service.termination_employee_group,1,1,1,0
+access_eos_reason_manager,access.eos.reason.manager,model_eos_reason,hr_end_of_service.termination_manager_group,1,1,1,1
+access_eos_reason_employee,access.eos.reason.employee,model_eos_reason,hr_end_of_service.termination_employee_group,1,0,0,0
+access_eos_field_rule_code_manager,access.eos.field.rule.code.manager,model_eos_field_rule_code,hr_end_of_service.termination_manager_group,1,1,1,1

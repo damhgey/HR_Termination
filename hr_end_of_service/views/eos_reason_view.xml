@@ -1,0 +1,48 @@
+<odoo>
+    <!-- EOS reason tree view -->
+    <record id="eos_reason_tree_view" model="ir.ui.view">
+        <field name="name">eos.reason.tree.view</field>
+        <field name="model">eos.reason</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="note"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- EOS reason form view -->
+    <record id="eos_reason_form_view" model="ir.ui.view">
+        <field name="name">eos.reason.form.view</field>
+        <field name="model">eos.reason</field>
+        <field name="arch" type="xml">
+            <form String="EOS Reasons">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="code"/>
+                        <field name="note"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!--    EOS Reason Action  -->
+    <record id="eos_reason_action" model="ir.actions.act_window">
+        <field name="name">EOS Reason</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">eos.reason</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new EOS Reason
+            </p>
+        </field>
+    </record>
+
+    <!--Termination Menus -->
+    <menuitem id="eos_reason_menu" parent="hr_termination_configuration_menu_parent" action="eos_reason_action"
+              groups="hr_end_of_service.termination_manager_group"/>
+</odoo>

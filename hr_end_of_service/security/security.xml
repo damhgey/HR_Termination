@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--    groups  -->
+    <record model="ir.module.category" id="hr_termination_category">
+        <field name="name">Termination</field>
+        <field name="description">Category For Termination</field>
+    </record>
+
+    <record id="termination_employee_group" model="res.groups">
+        <field name="name">Termination Employee</field>
+        <field name="category_id" ref="hr_termination_category"/>
+    </record>
+
+    <record id="termination_manager_group" model="res.groups">
+        <field name="name">Termination Manager</field>
+        <field name="category_id" ref="hr_termination_category"/>
+    </record>
+
+    <record id="termination_department_approve_group" model="res.groups">
+        <field name="name">Termination Department Approve</field>
+        <field name="category_id" ref="hr_termination_category"/>
+    </record>
+
+    <record id="termination_hr_approve_group" model="res.groups">
+        <field name="name">Termination HR Approve</field>
+        <field name="category_id" ref="hr_termination_category"/>
+    </record>
+
+    <record id="termination_finance_approve_group" model="res.groups">
+        <field name="name">Termination Finance Approve</field>
+        <field name="category_id" ref="hr_termination_category"/>
+    </record>
+
+    <!--Record Rules-->
+    <record model="ir.rule" id="employee_see_his_termination_only">
+        <field name="name">Employee See His Termination Only</field>
+        <field name="model_id" ref="model_hr_termination"/>
+        <field name="domain_force">[('user_id','=',user.id)]</field>
+        <field name="groups" eval="[(4, ref('termination_employee_group'))]"/>
+        <field name="perm_create" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_unlink" eval="0"/>
+        <field name="perm_read" eval="1"/>
+    </record>
+
+    <record model="ir.rule" id="see_all_lab">
+        <field name="name">Manager See All Termination</field>
+        <field name="model_id" ref="model_hr_termination"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('termination_manager_group'))]"/>
+        <field name="perm_create" eval="1"/>
+        <field name="perm_write" eval="1"/>
+        <field name="perm_unlink" eval="1"/>
+        <field name="perm_read" eval="1"/>
+    </record>
+
+</odoo>

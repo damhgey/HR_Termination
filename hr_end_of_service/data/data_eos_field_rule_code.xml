@@ -1,0 +1,24 @@
+<odoo>
+    <data noupdate="1">
+        <record id="last_total_salary" model="eos.field.rule.code">
+            <field name="field_name">Last Total Salary</field>
+            <field name="rule_code">NET</field>
+        </record>
+
+        <record id="eos_amount" model="eos.field.rule.code">
+            <field name="field_name">EOS Amount</field>
+            <field name="rule_code">EOSB</field>
+        </record>
+
+        <record id="leave_amount" model="eos.field.rule.code">
+            <field name="field_name">Leave Amount</field>
+            <field name="rule_code">ALBA</field>
+        </record>
+
+        <record id="loan_balance_amount" model="eos.field.rule.code">
+            <field name="field_name">Loan Balance Amount </field>
+            <field name="rule_code">IN_DED</field>
+        </record>
+    </data>
+
+</odoo>

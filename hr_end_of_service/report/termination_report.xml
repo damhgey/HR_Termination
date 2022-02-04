@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <report
+                id="hr_termination_report"
+                model="hr.termination"
+                report_type="qweb-pdf"
+                string="Termination"
+                name="hr_end_of_service.report_termination_template"
+                file="hr_end_of_service.report_termination_template"
+        />
+
+        <template id="report_termination_template">
+            <t t-call="web.external_layout">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="web.html_container">
+                        <div class="page">
+                            <h1 class="text-center">
+                                <strong style="text-decoration: underline;">Termination</strong>
+                            </h1>
+                            <br/>
+                            <br/>
+
+                            <!--Row 1 -->
+                            <div class="row">
+                                <div class="col-7 ml-5">
+                                    <strong size="7">Termination Number:</strong>
+                                    <span t-field="o.termination_code"/>
+                                    <br/>
+                                    <strong size="4">Employee:</strong>
+                                    <span t-field="o.employee_id.name"/>
+                                    <br/>
+                                    <strong size="4">Employee code:</strong>
+                                    <span t-field="o.employee_code"/>
+                                    <br/>
+                                    <strong size="4">Hire Date:</strong>
+                                    <span t-field="o.hiring_date"/>
+                                    <br/>
+                                    <strong size="4">Last Working Date:</strong>
+                                    <span t-field="o.last_working_date"/>
+                                    <br/>
+                                    <strong size="4">Service Duration:</strong>
+                                    <span t-field="o.service_duration"/>
+                                </div>
+                                <div class="col-5">
+                                    <strong size="4">Status:</strong>
+                                    <span t-field="o.state"/>
+                                    <br/>
+                                    <strong size="4">Application Date:</strong>
+                                    <span t-field="o.application_date"/>
+                                    <br/>
+                                    <strong size="4">Job Position:</strong>
+                                    <span t-field="o.job_id.name"/>
+                                    <br/>
+                                    <strong size="4">Contract:</strong>
+                                    <span t-field="o.contract_id.name"/>
+                                    <br/>
+                                    <strong size="4">EOS Reason:</strong>
+                                    <span t-field="o.eos_reason.name"/>
+                                </div>
+                            </div>
+                            <br/>
+                            <!--Row 2-->
+                            <div class="row">
+                                <div class="col-7 ml-5">
+                                    <strong size="7">Payslip Name:</strong>
+                                    <span t-field="o.termination_payslip_id.name"/>
+                                    <br/>
+                                    <strong size="4">Last Total Salary:</strong>
+                                    <span t-esc="float(o.last_total_salary)"/>
+                                    <br/>
+                                    <strong size="4">EOS Amount:</strong>
+                                    <span t-field="o.eos_amount"/>
+                                    <br/>
+                                    <strong size="4">Travel Ticket:</strong>
+                                    <span t-field="o.travel_ticket"/>
+                                    <br/>
+                                    <strong size="4">Total Deserved:</strong>
+                                    <span t-field="o.total_deserved"/>
+                                    <br/>
+                                    <strong size="4">Leave Amount:</strong>
+                                    <span t-field="o.leave_amount"/>
+                                    <br/>
+                                    <strong size="4">Loan Balance Amount:</strong>
+                                    <span t-field="o.loan_balance_amount"/>
+                                </div>
+                                <div class="col-5">
+                                    <strong size="4">Journal:</strong>
+                                    <span t-field="o.termination_payslip_id.move_id.name"/>
+                                    <br/>
+                                    <strong size="4">Leave Balance Days:</strong>
+                                    <span t-field="o.leave_balance_days"/>
+                                </div>
+                            </div>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <br/>
+                            <!--row 3-->
+                            <div class="row">
+                                <div class="col-7 ml-5">
+                                    <strong size="4">Note:</strong>
+                                    <span t-field="o.note"/>
+                                    <br/>
+                                    <t t-if="o.approved_by">
+                                        <strong size="4">Approved By:</strong>
+                                        <span t-field="o.approved_by.name"/>
+                                    </t>
+                                </div>
+                                <div class="col-5">
+                                    <br/>
+                                    <t t-if="o.approved_date">
+                                        <strong size="4">Approved Date:</strong>
+                                        <span t-field="o.approved_date"/>
+                                    </t>
+                                </div>
+                            </div>
+
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

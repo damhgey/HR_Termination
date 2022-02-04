@@ -1,0 +1,31 @@
+<odoo>
+    <!--  EOS Fields Rule Code Tree view  -->
+    <record id="eos_fields_rule_code_tree_view" model="ir.ui.view">
+        <field name="name">eos.field.rule.code.tree.view</field>
+        <field name="model">eos.field.rule.code</field>
+        <field name="arch" type="xml">
+            <tree string="EOS Field Rule Code">
+                <field name="field_name"/>
+                <field name="rule_code"/>
+            </tree>
+        </field>
+    </record>
+
+    <!--    EOS Fields Rule Code Action  -->
+    <record id="eos_fields_rule_code_action" model="ir.actions.act_window">
+        <field name="name">EOS Fields Rule Code</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">eos.field.rule.code</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new EOS Field Rule Code
+            </p>
+        </field>
+    </record>
+
+    <!--Termination Menus -->
+    <menuitem id="eos_fields_rule_code_menu" parent="hr_termination_configuration_menu_parent"
+              action="eos_fields_rule_code_action"
+              groups="hr_end_of_service.termination_manager_group"/>
+</odoo>

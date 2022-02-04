@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--    Contract form view -->
+    <record id="hr_contract_form_view_inherit" model="ir.ui.view">
+        <field name="name">hr.contract.form.view.inherit</field>
+        <field name="model">hr.contract</field>
+        <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='hr_responsible_id']" position="after">
+                <field name="analytic_tag_ids" widget="many2many_tags"/>
+            </xpath>
+
+            <xpath expr="//group[@name='salary_and_advantages']" position="after">
+                <group name="annual_ticket" string="Annual Ticket">
+                    <field name="travel_ticket_amount"/>
+                </group>
+
+                <group name="monthly_allowances" string="Monthly Allowances">
+                    <field name="housing_allowance"/>
+                    <field name="transportation_allowance"/>
+                    <field name="mobile_allowance"/>
+                    <field name="food_allowance"/>
+                    <field name="fixed_overtime_allowance"/>
+                    <field name="other_allowance"/>
+                    <field name="total_salary"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!--    Contract tree view -->
+    <record id="hr_contract_tree_view_inherit" model="ir.ui.view">
+        <field name="name">hr.contract.tree.view.inherit</field>
+        <field name="model">hr.contract</field>
+        <field name="inherit_id" ref="hr_contract.hr_contract_view_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='job_id']" position="after">
+                <field name="wage" sum="housing"/>
+                <field name="housing_allowance" sum="housing"/>
+                <field name="transportation_allowance" sum="transportation"/>
+                <field name="mobile_allowance" sum="mobile"/>
+                <field name="food_allowance" sum="food"/>
+                <field name="fixed_overtime_allowance" sum="fixed overtime"/>
+                <field name="other_allowance" sum="other"/>
+                <field name="total_salary" sum="total salary"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

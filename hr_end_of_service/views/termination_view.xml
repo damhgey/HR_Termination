@@ -1,0 +1,126 @@
+<odoo>
+
+    <!--    Termination tree view -->
+    <record id="hr_termination_tree_view" model="ir.ui.view">
+        <field name="name">hr.termination.tree.view</field>
+        <field name="model">hr.termination</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="termination_code"/>
+                <field name="employee_id"/>
+                <field name="department_id"/>
+                <field name="job_id"/>
+                <field name="application_date"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <!--    Termination form view  -->
+    <record id="hr_termination_form_view" model="ir.ui.view">
+        <field name="name">hr.termination.form.view</field>
+        <field name="model">hr.termination</field>
+        <field name="arch" type="xml">
+            <form string="Termination">
+                <header>
+                    <button name="button_submit" states="draft" string="Submit" groups="base.group_user"
+                            class="oe_highlight" type="object"/>
+                    <button name="button_department_approve" states="submit" string="Department Approve"
+                            groups="hr_end_of_service.termination_department_approve_group,hr_end_of_service.termination_manager_group"
+                            class="oe_highlight" type="object"/>
+                    <button name="button_hr_approve" states="department_approve" string="HR Approve"
+                            groups="hr_end_of_service.termination_hr_approve_group,hr_end_of_service.termination_manager_group"
+                            class="oe_highlight" type="object"/>
+                    <button name="button_finance_approve" states="hr_approve" string="Finance Approve"
+                            groups="hr_end_of_service.termination_finance_approve_group,hr_end_of_service.termination_manager_group"
+                            class="oe_highlight"
+                            type="object"/>
+<!--                    <button name="button_paid" states="finance_approve" string="Paid"-->
+<!--                            groups="hr_end_of_service.termination_finance_approve_group,hr_end_of_service.termination_manager_group"-->
+<!--                            class="oe_highlight"-->
+<!--                            type="object"/>-->
+                    <button name="button_cancel" states="submit,department_approve,hr_approve"
+                            string="Cancel" groups="base.group_user" type="object"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,submit,department_approve,hr_approve,finance_approve,cancel"/>
+                </header>
+
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="open_termination_payslip" type="object"
+                                class="oe_stat_button" icon="fa-money"
+                                string="Payslip"
+                                attrs="{'invisible': [('state', 'in', ('draft', 'submit'))]}"
+                        />
+                    </div>
+
+                    <h1>
+                        <field name="termination_code"/>
+                    </h1>
+                    <group>
+                        <group>
+                            <field name="application_date"/>
+                        </group>
+                        <group></group>
+                        <group String="Employee Information">
+                            <field name="employee_id"/>
+                            <field name="employee_code"/>
+                            <field name="contract_id"/>
+                            <field name="company_id"/>
+                            <field name="department_id"/>
+                            <field name="job_id"/>
+                            <field name="hiring_date"/>
+                            <field name="last_working_date"/>
+                            <field name="eos_reason"/>
+                            <field name="service_duration"/>
+                        </group>
+                        <group String="Calculation Fields"
+                               attrs="{'invisible': [('state', 'in', ('draft','submit','cancel'))]}">
+                            <field name="last_total_salary"/>
+                            <field name="leave_balance_days"/>
+                            <field name="eos_amount"/>
+                            <field name="leave_amount"/>
+                            <field name="travel_ticket"/>
+                            <field name="loan_balance_amount"/>
+                            <field name="total_deserved"/>
+                        </group>
+                        <group string="Approved Data"
+                               attrs="{'invisible': [('state', 'not in', ('hr_approve','finance_approve'))]}">
+                            <field name="approved_by"
+                                   attrs="{'required': [('state', 'in', ('hr_approve','finance_approve'))]}"/>
+                            <field name="approved_date"
+                                   attrs="{'required': [('state', 'in', ('hr_approve','finance_approve'))]}"/>
+                            <field name="note"/>
+                        </group>
+                    </group>
+                </sheet>
+
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!--    Termination Action  -->
+    <record id="hr_termination_action" model="ir.actions.act_window">
+        <field name="name">Termination</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">hr.termination</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Apply for a new Termination
+            </p>
+        </field>
+    </record>
+
+    <!--Termination Menus -->
+    <menuitem id="hr_termination_menu_root" name="Termination"
+              groups="hr_end_of_service.termination_manager_group,hr_end_of_service.termination_employee_group"/>
+    <menuitem id="hr_termination_menu_parent" parent="hr_termination_menu_root" action="hr_termination_action"
+              groups="hr_end_of_service.termination_manager_group,hr_end_of_service.termination_employee_group"/>
+    <menuitem id="hr_termination_configuration_menu_parent" parent="hr_termination_menu_root" name="Configuration"
+              groups="hr_end_of_service.termination_manager_group"/>
+</odoo>
