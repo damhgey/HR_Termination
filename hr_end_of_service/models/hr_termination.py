@@ -42,11 +42,12 @@ class HrTermination(models.Model):
     job_id = fields.Many2one('hr.job', 'Job Position', related='employee_id.job_id', track_visibility='onchange')
     hiring_date = fields.Date('Hiring Date', readonly=True, track_visibility='onchange', required=True,
                               related='employee_id.first_contract_date')
-    last_working_date = fields.Date('Last Working Date', required=True, default=fields.Date.today(),
+    last_working_date = fields.Date('Last Working Date', store=True, required=True, default=fields.Date.today(),
                                     states={'draft': [('readonly', False)]}, track_visibility='onchange')
     eos_reason = fields.Many2one(comodel_name="eos.reason", string="EOS Reason", required=True)
-    eos_reason_note = fields.Many2one(string="EOS Reason Note", related='eos_reason.note')
+    eos_reason_note = fields.Text(string="EOS Reason Note", related='eos_reason.note')
     service_duration = fields.Char(string="Service Duration", compute='_compute_service_duration')
+    show_recompute_button = fields.Boolean(default=False)
 
     # calculation field
     currency_id = fields.Many2one('res.currency', string='Currency')
@@ -75,17 +76,22 @@ class HrTermination(models.Model):
         vals['termination_code'] = termination_code
         return super(HrTermination, self).create(vals)
 
+    @api.constrains('show_recompute_button')
+    def _check_recompute_button_clicked(self):
+        if self.show_recompute_button:
+            raise ValidationError(_("There is fields changed you must click recompute button first"))
+
     def button_submit(self):
         # Update value of eos field in employee contract with True
         emp_contract = self.employee_id.contract_id
-        emp_contract.write({'became_eos': True, 'eos_reason': self.eos_reason.name})
+        emp_contract.write({'became_eos': True, 'eos_reason': self.eos_reason.name, 'date_end': self.last_working_date})
 
         self.state = 'submit'
 
     def button_department_approve(self):
         # Update End Date in contract
         emp_contract = self.employee_id.contract_id
-        emp_contract.write({'date_end': self.last_working_date})
+        emp_contract.write({'eos_reason': self.eos_reason.name, 'date_end': self.last_working_date})
 
         today = fields.Date.today()
         date_from = today.replace(day=1)
@@ -138,18 +144,14 @@ class HrTermination(models.Model):
         self.state = 'hr_approve'
 
     def button_finance_approve(self):
-
-        # Update End Date in contract
-        emp_contract = self.employee_id.contract_id
-        emp_contract.write({'date_end': self.last_working_date})
-
+        # confirm payslip and post journal entry
         self.termination_payslip_id.action_payslip_done()
         self.termination_payslip_id.move_id.action_post()
 
-        self.state = 'finance_approve'
+        # Archive Employee
+        self.employee_id.action_archive()
 
-    # def button_paid(self):
-    #     self.state = 'paid'
+        self.state = 'finance_approve'
 
     def button_cancel(self):
         if self.state in ('finance_approve', 'paid'):
@@ -163,56 +165,6 @@ class HrTermination(models.Model):
                 self.termination_payslip_id.write({'state': 'cancel'})
             self.state = 'cancel'
 
-    # Update eos reason in contract onchange and termination fields that read from payslip
-    @api.onchange('eos_reason', 'last_working_date', 'state')
-    def update_and_recompute_onchange_field(self):
-        self = self._origin
-        if self.state not in ('draft', 'cancel'):
-            # Update eos reason in contract
-            emp_contract = self.employee_id.contract_id
-            emp_contract.write({'eos_reason': self.eos_reason.name, 'date_end': self.last_working_date})
-
-            if self.termination_payslip_id:
-                # Recompute payslip
-                self.termination_payslip_id.action_refresh_from_work_entries()
-                self.termination_payslip_id.compute_sheet()
-                self.termination_payslip_id.write({'source_document_id': self.id})
-                # Update fields that read from payslip
-                # Update eos fields values form created payslip
-                # last_total_salary
-                net = self.termination_payslip_id.line_ids.filtered(lambda l: l.code == 'NET').mapped('total')
-                eosb_category = sum(
-                    self.termination_payslip_id.line_ids.filtered(lambda l: l.category_id.code == 'EOSB').mapped(
-                        'total'))
-                if net and eosb_category:
-                    self.last_total_salary = net[0] - eosb_category
-                elif net:
-                    self.last_total_salary = net[0]
-                else:
-                    self.last_total_salary = net[0]
-
-                # eos_amount
-                eos_amount = self.termination_payslip_id.line_ids.filtered(lambda l: l.code == 'EOSB').mapped('total')
-                if eos_amount:
-                    self.eos_amount = eos_amount[0]
-                else:
-                    self.eos_amount = 0
-
-                # leave_amount
-                leave_amount = self.termination_payslip_id.line_ids.filtered(lambda l: l.code == 'ALBA').mapped('total')
-                if leave_amount:
-                    self.leave_amount = leave_amount[0]
-                else:
-                    self.leave_amount = 0
-
-                # loan_balance_amount
-                loan_balance_amount = self.termination_payslip_id.line_ids.filtered(
-                    lambda l: l.code == 'IN_DED').mapped('total')
-                if loan_balance_amount:
-                    self.loan_balance_amount = loan_balance_amount[0]
-                else:
-                    self.loan_balance_amount = 0
-
     # compute total deserved
     @api.depends('last_total_salary', 'eos_amount', 'leave_amount', 'travel_ticket', 'loan_balance_amount')
     def _compute_total_deserve(self):
@@ -224,8 +176,7 @@ class HrTermination(models.Model):
             else:
                 rec.total_deserved = 0
 
-                # Compute service duration based on last working date hiring date
-
+    # Compute service duration based on last working date hiring date
     @api.depends('last_working_date', 'hiring_date')
     def _compute_service_duration(self):
         start_date = self.hiring_date
@@ -241,6 +192,72 @@ class HrTermination(models.Model):
             raise ValidationError(_("Start date must be less than last working date"))
         else:
             self.service_duration = ' 0 year 0 month 0 day '
+
+    @api.onchange('last_working_date', 'eos_reason')
+    def onchange_show_recompute(self):
+        if self.state in ('department_approve', 'hr_approve'):
+            self.show_recompute_button = True
+
+    # Button to update eos reason and end date in contract onchange
+    # and recompute payslip and update termination fields that read from payslip
+    def recompute_and_update_if_change(self):
+        if self.state not in ('draft', 'cancel'):
+            updated_fields = {}
+            # To update eos reason and end date in contract
+            emp_contract = self.employee_id.contract_id
+            emp_contract.write({'eos_reason': self.eos_reason.name, 'date_end': self.last_working_date})
+
+            if self.termination_payslip_id:
+                # Recompute payslip
+                self.termination_payslip_id.action_refresh_from_work_entries()
+                self.termination_payslip_id.compute_sheet()
+                self.termination_payslip_id.write({'source_document_id': self.id})
+
+                # Recompute Payslip and assign calculation fields from payslip lines
+
+                # last_total_salary
+                net = self.termination_payslip_id.line_ids.filtered(lambda l: l.code == 'NET').mapped('total')
+                eosb_category = sum(
+                    self.termination_payslip_id.line_ids.filtered(lambda l: l.category_id.code == 'EOSB').mapped(
+                        'total'))
+                if net and eosb_category:
+                    last_total_salary = net[0] - eosb_category
+                elif net:
+                    last_total_salary = net[0]
+                else:
+                    last_total_salary = 0
+                updated_fields['last_total_salary'] = last_total_salary
+
+                # eos_amount
+                eos_amount = self.termination_payslip_id.line_ids.filtered(lambda l: l.code == 'EOSB').mapped('total')
+                if eos_amount:
+                    eos_amount = eos_amount[0]
+                else:
+                    eos_amount = 0
+                updated_fields['eos_amount'] = eos_amount
+
+                # leave_amount
+                leave_amount = self.termination_payslip_id.line_ids.filtered(lambda l: l.code == 'ALBA').mapped('total')
+                if leave_amount:
+                    leave_amount = leave_amount[0]
+                else:
+                    leave_amount = 0
+                updated_fields['leave_amount'] = leave_amount
+
+                # loan_balance_amount
+                loan_balance_amount = self.termination_payslip_id.line_ids.filtered(
+                    lambda l: l.code == 'IN_DED').mapped('total')
+                if loan_balance_amount:
+                    loan_balance_amount = loan_balance_amount[0]
+                else:
+                    loan_balance_amount = 0
+                updated_fields['loan_balance_amount'] = loan_balance_amount
+
+            #  Update current record fields with new values after recomputed
+            self.write(updated_fields)
+
+            # Update show_recompute_button field to be false to make button show if changes happen
+            self.show_recompute_button = False
 
     # Action for smart button of related termination payslip
     def open_termination_payslip(self):

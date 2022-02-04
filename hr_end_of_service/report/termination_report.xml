@@ -57,6 +57,9 @@
                                     <br/>
                                     <strong size="4">EOS Reason:</strong>
                                     <span t-field="o.eos_reason.name"/>
+                                    <br/>
+                                    <strong size="4">EOS Reason Note:</strong>
+                                    <span t-field="o.eos_reason_note"/>
                                 </div>
                             </div>
                             <br/>

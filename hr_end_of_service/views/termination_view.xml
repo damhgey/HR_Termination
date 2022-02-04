@@ -35,14 +35,16 @@
                             groups="hr_end_of_service.termination_finance_approve_group,hr_end_of_service.termination_manager_group"
                             class="oe_highlight"
                             type="object"/>
-<!--                    <button name="button_paid" states="finance_approve" string="Paid"-->
-<!--                            groups="hr_end_of_service.termination_finance_approve_group,hr_end_of_service.termination_manager_group"-->
-<!--                            class="oe_highlight"-->
-<!--                            type="object"/>-->
+                    <button name="recompute_and_update_if_change" string="Recompute"
+                            groups="hr_end_of_service.termination_finance_approve_group,hr_end_of_service.termination_manager_group"
+                            class="oe_highlight"
+                            attrs="{'invisible':[('show_recompute_button', '=', False)]}"
+                            type="object"/>
                     <button name="button_cancel" states="submit,department_approve,hr_approve"
                             string="Cancel" groups="base.group_user" type="object"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="draft,submit,department_approve,hr_approve,finance_approve,cancel"/>
+                    <field name="show_recompute_button" invisible="1"/>
                 </header>
 
                 <sheet>
@@ -72,15 +74,16 @@
                             <field name="hiring_date"/>
                             <field name="last_working_date"/>
                             <field name="eos_reason"/>
+                            <field name="eos_reason_note"/>
                             <field name="service_duration"/>
                         </group>
                         <group String="Calculation Fields"
                                attrs="{'invisible': [('state', 'in', ('draft','submit','cancel'))]}">
-                            <field name="last_total_salary"/>
                             <field name="leave_balance_days"/>
                             <field name="eos_amount"/>
                             <field name="leave_amount"/>
                             <field name="travel_ticket"/>
+                            <field name="last_total_salary"/>
                             <field name="loan_balance_amount"/>
                             <field name="total_deserved"/>
                         </group>

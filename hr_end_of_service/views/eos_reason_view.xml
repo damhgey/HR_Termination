@@ -20,9 +20,13 @@
             <form String="EOS Reasons">
                 <sheet>
                     <group>
-                        <field name="name"/>
-                        <field name="code"/>
-                        <field name="note"/>
+                        <group>
+                            <field name="name"/>
+                            <field name="note"/>
+                        </group>
+                        <group>
+                            <field name="code"/>
+                        </group>
                     </group>
                 </sheet>
             </form>
