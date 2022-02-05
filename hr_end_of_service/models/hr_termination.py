@@ -76,11 +76,6 @@ class HrTermination(models.Model):
         vals['termination_code'] = termination_code
         return super(HrTermination, self).create(vals)
 
-    @api.constrains('show_recompute_button')
-    def _check_recompute_button_clicked(self):
-        if self.show_recompute_button:
-            raise ValidationError(_("There is fields changed you must click recompute button first"))
-
     def button_submit(self):
         # Update value of eos field in employee contract with True
         emp_contract = self.employee_id.contract_id
@@ -141,9 +136,17 @@ class HrTermination(models.Model):
         self.state = 'department_approve'
 
     def button_hr_approve(self):
+        # ensure making recompute before move to the next state
+        if self.show_recompute_button:
+            raise ValidationError(_("Click recompute before moving to next state because there is some data updated"))
+
         self.state = 'hr_approve'
 
     def button_finance_approve(self):
+        # ensure making recompute before move to the next state
+        if self.show_recompute_button:
+            raise ValidationError(_("Click recompute before moving to next state because there is some data updated"))
+
         # confirm payslip and post journal entry
         self.termination_payslip_id.action_payslip_done()
         self.termination_payslip_id.move_id.action_post()
