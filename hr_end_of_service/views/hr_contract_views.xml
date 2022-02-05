@@ -15,6 +15,9 @@
                         <field name="eos_reason" readonly="1"/>
                     </group>
                     <group>
+                        <field name="eos_code" readonly="1"/>
+                    </group>
+                    <group>
                         <field name="leave_balance_days" readonly="1"/>
                     </group>
                 </page>

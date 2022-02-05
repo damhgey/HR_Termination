@@ -84,7 +84,7 @@
                             <field name="leave_amount"/>
                             <field name="travel_ticket"/>
                             <field name="last_total_salary"/>
-                            <field name="loan_balance_amount"/>
+<!--                            <field name="loan_balance_amount"/>-->
                             <field name="total_deserved"/>
                         </group>
                         <group string="Approved Data"

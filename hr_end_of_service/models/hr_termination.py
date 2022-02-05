@@ -51,13 +51,14 @@ class HrTermination(models.Model):
 
     # calculation field
     currency_id = fields.Many2one('res.currency', string='Currency')
-    last_total_salary = fields.Monetary(string="Last Total Salary", )
-    leave_balance_days = fields.Float(string="Leave Balance Days",
+    last_total_salary = fields.Monetary(string="Last Total Salary", readonly=True)
+    leave_balance_days = fields.Float(string="Leave Balance Days", readonly=True,
                                       related='employee_id.contract_id.leave_balance_days')
-    eos_amount = fields.Float(string="EOS Amount")
-    leave_amount = fields.Float(string="Leave Amount")
-    travel_ticket = fields.Float(string="Travel Ticket", related='employee_id.contract_id.travel_ticket_amount')
-    loan_balance_amount = fields.Float(string="Loan Balance Amount")
+    eos_amount = fields.Float(string="EOS Amount", readonly=True)
+    leave_amount = fields.Float(string="Leave Amount", readonly=True)
+    travel_ticket = fields.Float(string="Travel Ticket", readonly=True,
+                                 related='employee_id.contract_id.travel_ticket_amount')
+    # loan_balance_amount = fields.Float(string="Loan Balance Amount", readonly=True)
     total_deserved = fields.Float(string="Total Deserved", compute='_compute_total_deserve')
     termination_payslip_id = fields.Many2one('hr.payslip', string='Termination Payslip')
     user_id = fields.Many2one('res.users', default=lambda self: self.env.user)
@@ -79,14 +80,17 @@ class HrTermination(models.Model):
     def button_submit(self):
         # Update value of eos field in employee contract with True
         emp_contract = self.employee_id.contract_id
-        emp_contract.write({'became_eos': True, 'eos_reason': self.eos_reason.name, 'date_end': self.last_working_date})
+        emp_contract.write(
+            {'became_eos': True, 'eos_reason': self.eos_reason.name, 'eos_code': self.eos_reason.code,
+             'date_end': self.last_working_date})
 
         self.state = 'submit'
 
     def button_department_approve(self):
         # Update End Date in contract
         emp_contract = self.employee_id.contract_id
-        emp_contract.write({'eos_reason': self.eos_reason.name, 'date_end': self.last_working_date})
+        emp_contract.write({'eos_reason': self.eos_reason.name, 'eos_code': self.eos_reason.code,
+                            'date_end': self.last_working_date})
 
         today = fields.Date.today()
         date_from = today.replace(day=1)
@@ -128,10 +132,10 @@ class HrTermination(models.Model):
         if leave_amount:
             self.leave_amount = leave_amount[0]
 
-        # loan_balance_amount
-        loan_balance_amount = termination_payslip.line_ids.filtered(lambda l: l.code == 'IN_DED').mapped('total')
-        if loan_balance_amount:
-            self.loan_balance_amount = loan_balance_amount[0]
+        # # loan_balance_amount
+        # loan_balance_amount = termination_payslip.line_ids.filtered(lambda l: l.code == 'IN_DED').mapped('total')
+        # if loan_balance_amount:
+        #     self.loan_balance_amount = abs(loan_balance_amount[0])
 
         self.state = 'department_approve'
 
@@ -162,18 +166,19 @@ class HrTermination(models.Model):
         else:
             # back eos to false
             emp_contract = self.employee_id.contract_id
-            emp_contract.write({'became_eos': False, 'eos_reason': False, 'date_end': False, 'state': 'open'})
+            emp_contract.write(
+                {'became_eos': False, 'eos_reason': False, 'eos_code': False, 'date_end': False, 'state': 'open'})
             # updated termination payslip to rejected status
             if self.termination_payslip_id:
                 self.termination_payslip_id.write({'state': 'cancel'})
             self.state = 'cancel'
 
     # compute total deserved
-    @api.depends('last_total_salary', 'eos_amount', 'leave_amount', 'travel_ticket', 'loan_balance_amount')
+    @api.depends('last_total_salary', 'eos_amount', 'leave_amount', 'travel_ticket',)
     def _compute_total_deserve(self):
         for rec in self:
             total = sum(
-                [rec.last_total_salary, rec.eos_amount, rec.leave_amount, rec.travel_ticket, rec.loan_balance_amount])
+                [rec.last_total_salary, rec.eos_amount, rec.leave_amount, rec.travel_ticket])
             if total:
                 rec.total_deserved = total
             else:
@@ -208,7 +213,7 @@ class HrTermination(models.Model):
             updated_fields = {}
             # To update eos reason and end date in contract
             emp_contract = self.employee_id.contract_id
-            emp_contract.write({'eos_reason': self.eos_reason.name, 'date_end': self.last_working_date})
+            emp_contract.write({'eos_reason': self.eos_reason.name, 'eos_code': self.eos_reason.code, 'date_end': self.last_working_date})
 
             if self.termination_payslip_id:
                 # Recompute payslip
@@ -248,13 +253,13 @@ class HrTermination(models.Model):
                 updated_fields['leave_amount'] = leave_amount
 
                 # loan_balance_amount
-                loan_balance_amount = self.termination_payslip_id.line_ids.filtered(
-                    lambda l: l.code == 'IN_DED').mapped('total')
-                if loan_balance_amount:
-                    loan_balance_amount = loan_balance_amount[0]
-                else:
-                    loan_balance_amount = 0
-                updated_fields['loan_balance_amount'] = loan_balance_amount
+                # loan_balance_amount = self.termination_payslip_id.line_ids.filtered(
+                #     lambda l: l.code == 'IN_DED').mapped('total')
+                # if loan_balance_amount:
+                #     loan_balance_amount = abs(loan_balance_amount[0])
+                # else:
+                #     loan_balance_amount = 0
+                # updated_fields['loan_balance_amount'] = loan_balance_amount
 
             #  Update current record fields with new values after recomputed
             self.write(updated_fields)

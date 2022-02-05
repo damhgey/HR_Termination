@@ -83,9 +83,9 @@
                                     <br/>
                                     <strong size="4">Leave Amount:</strong>
                                     <span t-field="o.leave_amount"/>
-                                    <br/>
-                                    <strong size="4">Loan Balance Amount:</strong>
-                                    <span t-field="o.loan_balance_amount"/>
+<!--                                    <br/>-->
+<!--                                    <strong size="4">Loan Balance Amount:</strong>-->
+<!--                                    <span t-field="o.loan_balance_amount"/>-->
                                 </div>
                                 <div class="col-5">
                                     <strong size="4">Journal:</strong>

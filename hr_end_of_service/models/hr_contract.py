@@ -8,6 +8,7 @@ class HrContract(models.Model):
 
     became_eos = fields.Boolean(string="Became End Of service", help='A field to make eos salary rule run if true')
     eos_reason = fields.Char(string="EOS Reason", help='A field that salary rule use if eos true')
+    eos_code = fields.Char(string="EOS Code")
     leave_balance_days = fields.Float(string="Leave Balance Days", compute='_compute_leave_balance_days')
 
     def _compute_leave_balance_days(self):
