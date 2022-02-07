@@ -120,7 +120,7 @@
     </record>
 
     <!--Termination Menus -->
-    <menuitem id="hr_termination_menu_root" name="Termination"
+    <menuitem id="hr_termination_menu_root" name="Termination" web_icon="hr_end_of_service,static/description/icon.jpeg"
               groups="hr_end_of_service.termination_manager_group,hr_end_of_service.termination_employee_group"/>
     <menuitem id="hr_termination_menu_parent" parent="hr_termination_menu_root" action="hr_termination_action"
               groups="hr_end_of_service.termination_manager_group,hr_end_of_service.termination_employee_group"/>
