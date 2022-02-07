@@ -15,7 +15,7 @@ class HrContract(models.Model):
     other_allowance = fields.Float('Other', digits='Payroll')
 
     total_salary_compute = fields.Monetary('Total Salary', compute='_compute_total_salary', store=False)
-    total_salary = fields.Monetary('Total Salary rel', related='total_salary_compute', store=True)
+    total_salary = fields.Monetary('Total Salary', related='total_salary_compute', store=True)
     travel_ticket_amount = fields.Float('Travel Ticket Amount', digits='Payroll', store=True)
     analytic_tag_ids = fields.Many2many(comodel_name="account.analytic.tag", string="Analytic Tag")
 
