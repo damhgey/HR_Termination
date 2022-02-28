@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!--        category      -->
+        <record id="EOSB" model="hr.salary.rule.category">
+            <field name="name">End Of Service Benefit</field>
+            <field name="code">EOSB</field>
+        </record>
+
+        <!--        salary structure type  -->
+        <record id="eos_structure" model="hr.payroll.structure.type">
+            <field name="name">EOS</field>
+            <field name="country_id" eval="False"/>
+        </record>
+        <!--        salary structure   -->
+        <record id="hr_payroll_structure_eos_salary_structure" model="hr.payroll.structure">
+            <field name="name">EOS Salary Structure</field>
+            <field name="country_id" eval="False"/>
+            <field name="active">True</field>
+            <field name="type_id" ref="hr_end_of_service.eos_structure"/>
+        </record>
+
+        <!--        Salary Rules   -->
+        <record id="eos_benefits_salary_rule" model="hr.salary.rule">
+            <field name="category_id" ref="hr_end_of_service.EOSB"/>
+            <field name="name">EOS Benefits</field>
+            <field name="code">EOSB</field>
+            <field name="sequence">881</field>
+            <field name="active">True</field>
+            <field name="struct_id" ref="hr_end_of_service.hr_payroll_structure_eos_salary_structure"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = contract.became_eos</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+                days = employee.service_duration_days
+                months = employee.service_duration_months
+                years = employee.service_duration_years
+                total_days = ((years*360)+(months*30)+(days))
+                out=(worked_days.OUT and worked_days.OUT.number_of_days)
+                work = (30-out)
+
+                if contract.eos_reason == 'End of Contract':
+
+                if 360 &lt; total_days &lt;= 5 * 360:
+                result = contract.total_salary / 2 * total_days / 360
+                else:
+                result = (contract.total_salary / 2 * 5 * 360 + contract.total_salary* (total_days - 5 * 360)) / 360
+
+                elif contract.eos_reason == 'Resignation':
+
+                if 2 * 360 &lt;= total_days &lt;= 5 * 360:
+                result = contract.total_salary / 6 * total_days / 360
+                elif 5 * 360 &lt; total_days &lt; 10 * 360:
+                result = (contract.total_salary/ 3 * 5 * 360 + contract.total_salary* 2 / 3 * (total_days - 5 * 360)) /
+                360
+                elif 10 * 360 &lt;= total_days:
+                result = (contract.total_salary/ 2 * 5 * 360 + contract.total_salary * (total_days - 5 * 360)) / 360
+                elif contract.eos_reason == 'Termination of Contract':
+
+                if 360 &lt; total_days &lt;= 5 * 360:
+                result = contract.total_salary / 2 * total_days / 360
+                else:
+                result = (contract.total_salary / 2 * 5 * 360 + contract.total_salary* (total_days - 5 * 360)) / 360
+
+                elif contract.eos_reason == 'Termination':
+                result = 0
+            </field>
+        </record>
+
+        <record id="annual_leave_balance_salary_rule" model="hr.salary.rule">
+            <field name="category_id" ref="hr_end_of_service.EOSB"/>
+            <field name="name">Annual Leave Balance Amount</field>
+            <field name="code">ALBA</field>
+            <field name="sequence">882</field>
+            <field name="active">True</field>
+            <field name="struct_id" ref="hr_end_of_service.hr_payroll_structure_eos_salary_structure"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = contract.became_eos</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+                result = contract.total_salary/30*contract.leave_balance_days
+            </field>
+        </record>
+
+        <record id="travel_ticket_amount_salary_rule" model="hr.salary.rule">
+            <field name="category_id" ref="hr_end_of_service.EOSB"/>
+            <field name="name">Travel Ticket Amount</field>
+            <field name="code">TTA</field>
+            <field name="sequence">899</field>
+            <field name="active">True</field>
+            <field name="struct_id" ref="hr_end_of_service.hr_payroll_structure_eos_salary_structure"/>
+            <field name="condition_select">python</field>
+            <field name="condition_python">result = contract.became_eos</field>
+            <field name="amount_select">code</field>
+            <field name="amount_python_compute">
+                result = contract.travel_ticket_amount
+            </field>
+        </record>
+    </data>
+
+</odoo>

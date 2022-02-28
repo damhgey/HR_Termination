@@ -20,6 +20,8 @@
         'data/hr_termination_sequence.xml',
         'data/paid_termination_status_cron_job.xml',
         'data/data_eos_field_rule_code.xml',
+        'data/eos_reasons.xml',
+        'data/hr_salary_rules.xml',
         'report/termination_report.xml'
     ],
     "installable": True,

@@ -160,6 +160,9 @@ class HrTermination(models.Model):
 
         self.state = 'finance_approve'
 
+    def reset_to_draft(self):
+        self.state = 'draft'
+
     def button_cancel(self):
         if self.state in ('finance_approve', 'paid'):
             raise ValidationError(_("You can not cancel a termination that has confirmed payslip with posted entry"))

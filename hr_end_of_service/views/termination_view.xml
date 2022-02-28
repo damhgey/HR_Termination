@@ -40,6 +40,8 @@
                             class="oe_highlight"
                             attrs="{'invisible':[('show_recompute_button', '=', False)]}"
                             type="object"/>
+                    <button name="reset_to_draft" states="submit,department_approve,hr_approve,cancel" string="Reset To Draft" type="object"
+                            groups="base.group_user"/>
                     <button name="button_cancel" states="submit,department_approve,hr_approve"
                             string="Cancel" groups="base.group_user" type="object"/>
                     <field name="state" widget="statusbar"
@@ -84,7 +86,7 @@
                             <field name="leave_amount"/>
                             <field name="travel_ticket"/>
                             <field name="last_total_salary"/>
-<!--                            <field name="loan_balance_amount"/>-->
+                            <!--                            <field name="loan_balance_amount"/>-->
                             <field name="total_deserved"/>
                         </group>
                         <group string="Approved Data"
