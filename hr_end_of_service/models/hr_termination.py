@@ -161,6 +161,8 @@ class HrTermination(models.Model):
         self.state = 'finance_approve'
 
     def reset_to_draft(self):
+        if self.termination_payslip_id:
+            self.termination_payslip_id.action_payslip_cancel()
         self.state = 'draft'
 
     def button_cancel(self):

@@ -70,19 +70,19 @@
                                     <span t-field="o.termination_payslip_id.name"/>
                                     <br/>
                                     <strong size="4">Last Total Salary:</strong>
-                                    <span t-esc="float(o.last_total_salary)"/>
+                                    <span t-esc="float(o.last_total_salary)" t-options='{"widget": "float", "precision": 2}'/>
                                     <br/>
                                     <strong size="4">EOS Amount:</strong>
-                                    <span t-field="o.eos_amount"/>
+                                    <span t-field="o.eos_amount" t-options='{"widget": "float", "precision": 2}'/>
                                     <br/>
                                     <strong size="4">Travel Ticket:</strong>
-                                    <span t-field="o.travel_ticket"/>
+                                    <span t-field="o.travel_ticket" t-options='{"widget": "float", "precision": 2}'/>
                                     <br/>
                                     <strong size="4">Total Deserved:</strong>
-                                    <span t-field="o.total_deserved"/>
+                                    <span t-field="o.total_deserved" t-options='{"widget": "float", "precision": 2}'/>
                                     <br/>
                                     <strong size="4">Leave Amount:</strong>
-                                    <span t-field="o.leave_amount"/>
+                                    <span t-field="o.leave_amount" t-options='{"widget": "float", "precision": 2}'/>
 <!--                                    <br/>-->
 <!--                                    <strong size="4">Loan Balance Amount:</strong>-->
 <!--                                    <span t-field="o.loan_balance_amount"/>-->

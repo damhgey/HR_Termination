@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data>
+    <data noupdate="1">
         <!--        category      -->
         <record id="EOSB" model="hr.salary.rule.category">
             <field name="name">End Of Service Benefit</field>
@@ -40,30 +40,27 @@
                 work = (30-out)
 
                 if contract.eos_reason == 'End of Contract':
-
-                if 360 &lt; total_days &lt;= 5 * 360:
-                result = contract.total_salary / 2 * total_days / 360
-                else:
-                result = (contract.total_salary / 2 * 5 * 360 + contract.total_salary* (total_days - 5 * 360)) / 360
+                    if 360 &lt; total_days &lt;= 5 * 360:
+                        result = contract.total_salary / 2 * total_days / 360
+                    else:
+                        result = (contract.total_salary / 2 * 5 * 360 + contract.total_salary* (total_days - 5 * 360)) / 360
 
                 elif contract.eos_reason == 'Resignation':
+                    if 2 * 360 &lt;= total_days &lt;= 5 * 360:
+                        result = contract.total_salary / 6 * total_days / 360
+                    elif 5 * 360 &lt; total_days &lt; 10 * 360:
+                        result = (contract.total_salary/ 3 * 5 * 360 + contract.total_salary* 2 / 3 * (total_days - 5 * 360)) / 360
+                    elif 10 * 360 &lt;= total_days:
+                        result = (contract.total_salary/ 2 * 5 * 360 + contract.total_salary * (total_days - 5 * 360)) / 360
 
-                if 2 * 360 &lt;= total_days &lt;= 5 * 360:
-                result = contract.total_salary / 6 * total_days / 360
-                elif 5 * 360 &lt; total_days &lt; 10 * 360:
-                result = (contract.total_salary/ 3 * 5 * 360 + contract.total_salary* 2 / 3 * (total_days - 5 * 360)) /
-                360
-                elif 10 * 360 &lt;= total_days:
-                result = (contract.total_salary/ 2 * 5 * 360 + contract.total_salary * (total_days - 5 * 360)) / 360
                 elif contract.eos_reason == 'Termination of Contract':
-
-                if 360 &lt; total_days &lt;= 5 * 360:
-                result = contract.total_salary / 2 * total_days / 360
-                else:
-                result = (contract.total_salary / 2 * 5 * 360 + contract.total_salary* (total_days - 5 * 360)) / 360
+                    if 360 &lt; total_days &lt;= 5 * 360:
+                        result = contract.total_salary / 2 * total_days / 360
+                    else:
+                        result = (contract.total_salary / 2 * 5 * 360 + contract.total_salary* (total_days - 5 * 360)) / 360
 
                 elif contract.eos_reason == 'Termination':
-                result = 0
+                    result = 0
             </field>
         </record>
 
