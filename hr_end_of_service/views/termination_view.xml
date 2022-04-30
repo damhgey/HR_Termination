@@ -45,7 +45,7 @@
                     <button name="button_cancel" states="submit,department_approve,hr_approve"
                             string="Cancel" groups="base.group_user" type="object"/>
                     <field name="state" widget="statusbar"
-                           statusbar_visible="draft,submit,department_approve,hr_approve,finance_approve,cancel"/>
+                           statusbar_visible="draft,submit,department_approve,hr_approve,finance_approve,paid,cancel"/>
                     <field name="show_recompute_button" invisible="1"/>
                 </header>
 
